@@ -1,4 +1,4 @@
-Diffrent File formats in PySpark
+Diffrent File Formats in PySpark
 --------------------------------
 
 //Reading TextFile:
