@@ -1,0 +1,68 @@
+Diffrent File formats in PySpark
+--------------------------------
+
+//Reading TextFile:
+orders = sc.textFile("/user/aparna149/aparna/orders")
+
+//Validating Textfile:
+for i in orders.take(5): print(i)
+
+To save as Textfile, DataFrame has to be converted into RDD.
+//Saving TextFile:
+RDD.saveAsTextFile("output dir",classOf[org.apache.hadoop.io.compress.GZipCodec/SnappyCodec/BZip2Codec])
+
+//Converting to DataFrame:
+ordersDF = orders.map(lambda x: Row(order_id = int(x.split(",")[0]), order_date = x.split(",")[1], order_customer_id = int(x.split(",")[2]), order_status = x.split(",")[3]))
+
+For Avro file,
+pyspark --master yarn --conf spark.ui.port=12345 --num-executors 4 --packages com.databricks:spark-avro_2.10:2.0.1
+
+//Converting to Avro:
+sqlContex.setConf("spark.sql.avro.compression.codec","snappy")
+ordersDF.write.format("com.databricks.spark.avro").save("/user/aparna149/output/orders_avro")
+or/ ordersDF.save("/user/aparna149/output/orders_avro","com.databricks.spark.avro")
+
+//Reading from Avro:
+ordersavro = sqlContext.read.format("com.databricks.spark.avro").load("/user/aparna149/output/orders_avro")
+or/ ordersavro = sqlContext.load("/user/aparna149/output/orders_avro","com.databricks.spark.avro")
+
+//Validating Avro:
+for i in ordersavro.take(5): print(i)
+
+//Converting to ORC:
+sqlContext.setConf("spark.sql.orc.compression.codec","snappy")
+ordersDF.write.orc("/user/aparna149/output/orders_orc")
+
+//Reading from ORC:
+ordersorc = sqlContext.read.orc("/user/aparna149/output/orders_orc")
+
+//Validating ORC:
+for i in ordersorc.take(5): print(i)
+
+//Converting to Parquet :
+sqlContext.setConf("spark.sql.parquet.compression.codec","snappy")
+ordersDF.write.parquet("/user/aparna149/output/orders_parquet")
+
+//Reading from Parquet:
+ordersparquet = sqlContext.read.parquet("/user/aparna149/output/orders_parquet")
+
+//Validating Parquet:
+for i in ordersparquet.take(5): print(i)
+
+//Converting to Json:
+ordersDF.write.
+("/user/aparna149/outout/orders_json")
+
+//Reading from Json:
+sqlContext.setConf("spatk.sql.json.compression.codec","gzip")
+ordersjson = sqlContext.read.json("/user/aparna149/outout/orders_json")
+
+//Validating Json:
+for i in ordersjson.take(3): print(i)
+
+For csv file,
+pyspark --master yarn --conf spark.ui.port=12345 --num-executors 4 --packages com.databricks:spark-csv_2.10:1.5.0
+//Reading from csv:
+orders = sqlContext.load("/public/retail_db/orders","com.databricks.spark.csv")
+//Converting to csv :
+ordersDF.save("/user/aparna149/orders_csv","com.databricks.spark.csv")
