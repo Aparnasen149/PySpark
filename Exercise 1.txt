@@ -1,0 +1,43 @@
+Exercise 1
+**********
+Data is available in HDFS file system under /public/crime/csv
+Structure of data (ID,Case Number,Date,Block,IUCR,Primary Type,Description,Location Description,Arrest,Domestic,Beat,District,Ward,Community Area,FBI Code,X Coordinate,Y Coordinate,Year,Updated On,Latitude,Longitude,Location)
+File format - text file
+Delimiter - “,”
+Get monthly count of primary crime type, sorted by month in ascending and number of crimes per type in descending order
+Store the result in HDFS path /user/<YOUR_USER_ID>/solutions/solution01/crimes_by_type_by_month
+Output File Format: TEXT
+Output Columns: Month in YYYYMM format, crime count, crime type
+Output Delimiter: \t (tab delimited)
+Output Compression: gzip
+
+Solution
+********
+def getMonthYear(TimeStamp):
+   Date = TimeStamp.split(" ")[0]
+   Month = Date.split("/")[0]
+   Year = Date.split("/")[2]
+   Month_Year = Year+Month
+   return Month_Year
+crimeRdd = sc.textFile("/public/crime/csv")
+crimeHeader = crimeRdd.first()
+crimeData = crimeRdd.filter(lambda x: x != crimeHeader)
+crimeMap = crimeData.map(lambda x: (x.split(",")[2], x.split(",")[5]))
+
+crimeDataPerMonth = crimeMap.map(lambda x:((getMonthYear(x[0]), x[1]),1))
+for i in crimeDataPerMonth.take(20): print(i)
+
+crimeCountPerMonth = crimeDataPerMonth.reduceByKey(lambda x,y: x+y)
+for i in crimeCountPerMonth.take(20): print(i)
+
+crimeCountSortedbyReq = crimeCountPerMonth.map(lambda x:((x[0][0], -x[1]), x[0][1]))
+for i in crimeCountSortedbyReq.take(20): print(i)
+
+crimeCountSorted = crimeCountSortedbyReq.sortByKey()
+for i in crimeCountSorted.take(20): print(i)
+
+FinalSortedPerMothType=crimeCountSorted.map(lambda x: (str(x[0][0])+"\t")+str(-x[0][1])+"\t"+str(x[1]))
+for i in FinalSortedPerMothType.take(20): print(i)
+
+FinalSortedPerMothType.saveAsTextFile( "/user/aparna149/solutions/solution01/crimes_by_type_by_month",compressionCodecClass="org.apache.hadoop.io.compress.GzipCodec")
+
