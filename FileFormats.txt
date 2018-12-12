@@ -50,7 +50,7 @@ ordersparquet = sqlContext.read.parquet("/user/aparna149/output/orders_parquet")
 for i in ordersparquet.take(5): print(i)
 
 //Converting to Json:
-ordersDF.write.
+ordersDF.toJSON().saveAsTextFile
 ("/user/aparna149/outout/orders_json")
 
 //Reading from Json:
