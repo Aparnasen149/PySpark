@@ -1,0 +1,47 @@
+Exercise 4
+**********
+
+Import order_items table from mysql (db: retail_db , user : retail_user , password : xxxx)
+Import all records and columns from Order_items table
+Save the imported data as parquet in this hdfs location /user/yourusername/problem4/order-items/
+
+Import products table from mysql (db: retail_db , user : retail_user , password : xxxx)
+Import all records and columns from products table
+Save the imported data as avro in this hdfs location /user/yourusername/problem4/products/
+
+Read above orderitems and products from HDFS location
+Produce this output :
+
+ORDER_ITEM_ORDER_ID PRODUCT_ID PRODUCT_NAME PRODUCT_PRICE ORDER_SUBTOTAL
+
+Save above output as avro snappy in hdfs location /user/yourusername/problem4/output-avro-snappy/
+
+
+
+Solution
+********
+
+sqoop import 
+–connect jdbc:mysql://ms.itversity.com:3306/retail_db 
+–username retail_user 
+–password itversity 
+–table order_items 
+–as-parquetfile 
+–target-dir /user/aparna149/aparna/problem4/order_items/
+
+sqoop import 
+–connect jdbc:mysql://ms.itversity.com:3306/retail_db 
+–username retail_user 
+–password itversity 
+–table products --as-avrodatafile 
+–target-dir /user/aparna149/aparna/problem4/products/
+
+order_items = sqlContext.read.parquet("/user/aparna149/aparna/problem4/order_items")
+order_items.registerTempTable(“order_items”)
+
+products =sqlContext.read.format(“com.databricks.spark.avro”).load("/user/aparna149/aparna/problem4/products/")
+products.registerTempTable(“products”)
+
+result = sqlContext.sql(“select order_item_id,product_id,cast(product_price as decimal),cast(order_item_subtotal as decimal(10,2)) from products p join order_items oi on p.product_id = oi.order_item_product_id “)
+sqlContext.setConf(“spark.sql.avro.compression.codec”,“snappy”)
+result.write.format(“com.databricks.spark.avro”).save(”/user/aparna149/aparna/problem4/output-avro-snappy/”)
