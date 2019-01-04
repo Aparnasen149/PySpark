@@ -1,0 +1,51 @@
+Exercise 3
+**********
+
+Import orders table from mysql (db: retail_db , user : retail_user , password : xxxx)
+Import all records and columns from Orders table
+Save the imported data as text and tab delimitted in this hdfs location /user/aparna149/aparna/problem3/orders/
+
+Import order_items table from mysql (db: retail_db , user : retail_user , password : xxxx)
+Import all records and columns from Order_items table
+Save the imported data as text and tab delimitted in this hdfs location /user/aparna149/aparna/problem3/order_items/
+
+Read orders data from above HDFS location
+Read order items data form above HDFS location
+Produce output in this format (price and total should be treated as decimals)
+Consider only CLOSED & COMPLETE orders
+ORDER_ID ORDER_ITEM_ID PRODUCT_PRICE ORDER_SUBTOTAL ORDER_TOTAL
+Save above output as ORC in hive table “aparna_mock_orderdetails”
+
+Solution
+********
+
+
+sqoop import 
+–connect jdbc:mysql://ms.itversity.com:3306/retail_db 
+–username retail_user 
+–password itversity 
+–table orders 
+–as-textfile 
+–fields-terminated-by ‘\t’ 
+–target-dir /user/aparna149/aparna/problem3/orders/
+
+sqoop import 
+–connect jdbc:mysql://ms.itversity.com:3306/retail_db 
+–username retail_user 
+–password itversity 
+–table order_items 
+–as-textfile 
+–fields-terminated-by ‘\t’ 
+–target-dir /user/aparna149/aparna/problem3/order_items/
+
+orders = sc.textFile("/user/aparna149/aparna/problem3/orders/")
+ordersDF=orders.map(lambda x: x.split("\t")).map(lambda x: Row(order_id =int(x[0]),order_status = x[3])).toDF()
+ordersDF.registerTempTable(“orders”)
+order_items = sc.textFile("/user/aparna149/aparna/problem3/order_items")
+order_itemsDF = order_items.map(lambda x: x.split("\t")).map(lambda x: Row(order_item_id =int(x[0]),order_item_order_id=int(x[1]),order_item_subtotal=float(x[4]),order_item_product_price=float(x[5]))).toDF()
+order_itemsDF.registerTempTable(“order_items”)
+
+result = sqlContext.sql(“select order_id, order_item_id,cast (order_item_product_price as decimal (10,2)),cast(order_item_subtotal as decimal(10,2)),sum(order_item_subtotal) order_total from order_items oi join orders o on oi.order_item_order_id = o.order_id where order_status in (‘CLOSED’,‘COMPLETE’) group by order_id, order_item_id, order_item_product_price, order_item_subtotal”)
+
+sqlContext.sql(“use aparna”)
+result.write.format(“orc”).saveAsTable(“aparna_mock_orderdetails”)
