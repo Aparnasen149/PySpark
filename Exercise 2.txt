@@ -1,5 +1,10 @@
 Exercise 2
 **********
+Dataset is available in the link :
+https://github.com/Aparnasen149/Data/blob/master/orders_data
+https://github.com/Aparnasen149/Data/blob/master/order_items_data
+https://github.com/Aparnasen149/Data/blob/master/customers_data
+
 
 Data is available in local file system /data/retail_db
 Source directories: /data/retail_db/orders and /data/retail_db/customers
