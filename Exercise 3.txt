@@ -1,6 +1,11 @@
 Exercise 3
 **********
 
+Dataset is available in the link :
+https://github.com/Aparnasen149/Data/blob/master/orders_data
+https://github.com/Aparnasen149/Data/blob/master/order_items_data
+
+
 Import orders table from mysql (db: retail_db , user : retail_user , password : xxxx)
 Import all records and columns from Orders table
 Save the imported data as text and tab delimitted in this hdfs location /user/aparna149/aparna/problem3/orders/
