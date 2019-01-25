@@ -1,6 +1,12 @@
 Exercise 4
 **********
 
+Data is available in the link :
+https://github.com/Aparnasen149/Data/blob/master/orders_data
+https://github.com/Aparnasen149/Data/blob/master/order_items_data
+https://github.com/Aparnasen149/Data/blob/master/products_data
+
+
 Import order_items table from mysql (db: retail_db , user : retail_user , password : xxxx)
 Import all records and columns from Order_items table
 Save the imported data as parquet in this hdfs location /user/yourusername/problem4/order-items/
