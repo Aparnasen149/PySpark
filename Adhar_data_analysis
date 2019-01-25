@@ -1,6 +1,5 @@
 1.Description: Aadhaar dataset analysis using Spark
-Dataset is available in the link https://github.com/Aparnasen149/PySpark/blob/master/adhaar.csv
-
+Dataset is available in the link https://github.com/Aparnasen149/Data/blob/master/adhaar_data
 # Input: 
 #  /user/aparnasen149/adhaar.csv
 
